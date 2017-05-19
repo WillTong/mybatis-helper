@@ -1,7 +1,9 @@
-package com.github.willtong.helper;
+package com.github.mybatis.helper;
 
-import com.github.willtong.helper.annotation.Authority;
-import com.github.willtong.helper.annotation.Page;
+import com.github.mybatis.helper.annotation.Authority;
+import com.github.mybatis.helper.annotation.Page;
+import org.apache.ibatis.cache.CacheKey;
+import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
@@ -11,6 +13,8 @@ import org.apache.ibatis.plugin.Invocation;
 import org.apache.ibatis.plugin.Signature;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
+import org.apache.ibatis.session.ResultHandler;
+import org.apache.ibatis.session.RowBounds;
 
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -65,11 +69,9 @@ public class MybatisHelper extends AbsStatementHandlerInterceptor {
         ResultSet rs = null;
         try {
             countStmt = connection.prepareStatement(countSql);
-
             BoundSql countBS = new BoundSql(mappedStatement.getConfiguration(), countSql, boundSql.getParameterMappings(), boundSql.getParameterObject());
             ParameterHandler parameterHandler = new DefaultParameterHandler(mappedStatement, countBS.getParameterObject(), countBS);
             parameterHandler.setParameters(countStmt);
-
             rs = countStmt.executeQuery();
             int totalCount = 0;
             if (rs.next()) {
@@ -109,7 +111,7 @@ public class MybatisHelper extends AbsStatementHandlerInterceptor {
 
     private String buildAuthoritySql(String sql,BaseModel baseModel){
         StringBuilder sqlBuilder = new StringBuilder();
-        sqlBuilder.append("select * from (").append(sql).append(") where");
+        sqlBuilder.append("select T.* from (").append(sql).append(") T where");
         Iterator iter = baseModel.getDataAuthority().entrySet().iterator();
         while (iter.hasNext()) {
             sqlBuilder.append(" ");

@@ -1,4 +1,4 @@
-package com.github.willtong.helper;
+package com.github.mybatis.helper;
 
 import java.io.Serializable;
 import java.util.Map;

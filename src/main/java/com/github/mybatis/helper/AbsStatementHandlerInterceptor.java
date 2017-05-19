@@ -1,4 +1,4 @@
-package com.github.willtong.helper;
+package com.github.mybatis.helper;
 
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.MappedStatement;
@@ -32,7 +32,13 @@ public abstract class AbsStatementHandlerInterceptor implements Interceptor {
             String selectId = mappedStatement.getId();
             String className = selectId.substring(0, selectId.lastIndexOf("."));
             String methodName = selectId.substring(selectId.lastIndexOf(".") + 1);
-            Method method = Class.forName(className).getMethod(methodName);
+            Method method = null;
+            for(Method methodParam:Class.forName(className).getMethods()){
+                if(methodParam.getName().equals(methodName)){
+                    method=methodParam;
+                    break;
+                }
+            }
             return doIntercept(invocation, metaStatementHandler, mappedStatement, method);
         } catch (Exception e) {
             return invocation.proceed();
