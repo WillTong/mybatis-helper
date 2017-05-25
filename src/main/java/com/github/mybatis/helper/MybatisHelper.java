@@ -2,8 +2,6 @@ package com.github.mybatis.helper;
 
 import com.github.mybatis.helper.annotation.Authority;
 import com.github.mybatis.helper.annotation.Page;
-import org.apache.ibatis.cache.CacheKey;
-import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
@@ -13,8 +11,6 @@ import org.apache.ibatis.plugin.Invocation;
 import org.apache.ibatis.plugin.Signature;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
-import org.apache.ibatis.session.ResultHandler;
-import org.apache.ibatis.session.RowBounds;
 
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -44,7 +40,10 @@ public class MybatisHelper extends AbsStatementHandlerInterceptor {
                         }
                     }
                 }
-                metaStatementHandler.setValue("delegate.boundSql.sql", buildAuthoritySql(boundSql.getSql(), baseModel.getDataAuthority()));
+                //排除之后再验证是否有值
+                if(!baseModel.getDataAuthority().isEmpty()){
+                    metaStatementHandler.setValue("delegate.boundSql.sql", buildAuthoritySql(boundSql.getSql(), baseModel.getDataAuthority()));
+                }
             }
         }
         if (method.getAnnotation(Page.class) != null) {
