@@ -32,11 +32,19 @@ public class MybatisHelper extends AbsStatementHandlerInterceptor {
 
     @Override
     protected Object doIntercept(Invocation invocation, MetaObject metaStatementHandler, MappedStatement mappedStatement, Method method) throws Throwable {
-        if(method.getAnnotation(Authority.class)!= null){
+        Authority authority=method.getAnnotation(Authority.class);
+        if(authority!= null){
             BoundSql boundSql = (BoundSql) metaStatementHandler.getValue("delegate.boundSql");
             BaseModel baseModel = (BaseModel) boundSql.getParameterObject();
             if(baseModel.getDataAuthority()!=null&&!baseModel.getDataAuthority().isEmpty()){
-                metaStatementHandler.setValue("delegate.boundSql.sql", buildAuthoritySql(boundSql.getSql(), baseModel));
+                if(authority.value()!=null&&authority.value().length!=0){
+                    for(String exclude:authority.value()){
+                        if(baseModel.getDataAuthority().containsKey(exclude)){
+                            baseModel.getDataAuthority().remove(exclude);
+                        }
+                    }
+                }
+                metaStatementHandler.setValue("delegate.boundSql.sql", buildAuthoritySql(boundSql.getSql(), baseModel.getDataAuthority()));
             }
         }
         if (method.getAnnotation(Page.class) != null) {
@@ -109,10 +117,10 @@ public class MybatisHelper extends AbsStatementHandlerInterceptor {
         return sqlBuilder.toString();
     }
 
-    private String buildAuthoritySql(String sql,BaseModel baseModel){
+    private String buildAuthoritySql(String sql,Map<String, String[]> dataAuthority){
         StringBuilder sqlBuilder = new StringBuilder();
         sqlBuilder.append("select T.* from (").append(sql).append(") T where");
-        Iterator iter = baseModel.getDataAuthority().entrySet().iterator();
+        Iterator iter = dataAuthority.entrySet().iterator();
         while (iter.hasNext()) {
             sqlBuilder.append(" ");
             Map.Entry<String,String[]> entry = (Map.Entry<String,String[]>) iter.next();
