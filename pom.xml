@@ -52,12 +52,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <distributionManagement>
-        <repository>
-            <id>vanke-private</id>
-            <name>vanke private nexus</name>
-            <url>http://112.74.167.162:9999/content/repositories/3rdsnapshot/</url>
-        </repository>
-    </distributionManagement>
 </project>
