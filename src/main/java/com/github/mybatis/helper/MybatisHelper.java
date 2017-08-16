@@ -12,6 +12,7 @@ import org.apache.ibatis.plugin.Signature;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
 
+import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -55,7 +56,9 @@ public class MybatisHelper extends AbsStatementHandlerInterceptor {
                     int totalCount = countTotal((Connection) invocation.getArgs()[0], mappedStatement, boundSql);
                     baseModel.setTotal(totalCount);
                 }
-                metaStatementHandler.setValue("delegate.boundSql.sql", buildPageSql(boundSql.getSql(), baseModel));
+                DataSource dataSource = mappedStatement.getConfiguration().getEnvironment().getDataSource();
+                String dbType = dataSource.getConnection().getMetaData().getDriverName();
+                metaStatementHandler.setValue("delegate.boundSql.sql", buildPageSql(boundSql.getSql(), baseModel,dbType));
             }
         }
         return invocation.proceed();
@@ -109,12 +112,29 @@ public class MybatisHelper extends AbsStatementHandlerInterceptor {
      * @param baseModel
      * @return
      */
-    private String buildPageSql(String sql, BaseModel baseModel) {
+    private String buildPageSql(String sql, BaseModel baseModel, String dbType) {
         StringBuilder sqlBuilder = new StringBuilder();
-        sqlBuilder.append(sql);
-        sqlBuilder.append(" limit ").append(baseModel.getRows()).append(" offset ").append(baseModel.getBegin());
+        baseModel.setBegin((baseModel.getPage() - 1) * baseModel.getRows());
+        baseModel.setEnd(baseModel.getPage() * baseModel.getRows());
+        //默认oracle数据库
+        if(dbType == null || "".equals(dbType) || dbType.toLowerCase().contains("oracle")){
+            sqlBuilder.append("select * from(select h.*,rownum rn from (");
+            sqlBuilder.append(sql);
+            sqlBuilder.append(" ) h where rownum &lt;=").append(baseModel.getEnd()).append(") where rn> ").append(baseModel.getBegin());
+        }else{
+            if(dbType.toLowerCase().contains("mysql")){
+                sqlBuilder.append(sql);
+                sqlBuilder.append(" limit ").append(baseModel.getBegin()).append(",").append(baseModel.getEnd());
+            }else {
+                //todo 其他情况继续判断添加
+                sqlBuilder.append(sql);
+                sqlBuilder.append(" limit ").append(baseModel.getRows()).append(" offset ").append(baseModel.getBegin());
+            }
+        }
         return sqlBuilder.toString();
     }
+
+
 
     private String buildAuthoritySql(String sql,Map<String, String[]> dataAuthority){
         StringBuilder sqlBuilder = new StringBuilder();
