@@ -6,6 +6,7 @@ import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
+import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.plugin.Intercepts;
 import org.apache.ibatis.plugin.Invocation;
 import org.apache.ibatis.plugin.Signature;
@@ -80,6 +81,12 @@ public class MybatisHelper extends AbsStatementHandlerInterceptor {
         try {
             countStmt = connection.prepareStatement(countSql);
             BoundSql countBS = new BoundSql(mappedStatement.getConfiguration(), countSql, boundSql.getParameterMappings(), boundSql.getParameterObject());
+            for(ParameterMapping mapping:boundSql.getParameterMappings()){
+                String prop=mapping.getProperty();
+                if (boundSql.hasAdditionalParameter(prop)) {
+                    countBS.setAdditionalParameter(prop,boundSql.getAdditionalParameter(prop));
+                }
+            }
             ParameterHandler parameterHandler = new DefaultParameterHandler(mappedStatement, countBS.getParameterObject(), countBS);
             parameterHandler.setParameters(countStmt);
             rs = countStmt.executeQuery();
