@@ -6,14 +6,12 @@ import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
-import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.plugin.Intercepts;
 import org.apache.ibatis.plugin.Invocation;
 import org.apache.ibatis.plugin.Signature;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
 
-import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -57,9 +55,7 @@ public class MybatisHelper extends AbsStatementHandlerInterceptor {
                     int totalCount = countTotal((Connection) invocation.getArgs()[0], mappedStatement, boundSql);
                     baseModel.setTotal(totalCount);
                 }
-                DataSource dataSource = mappedStatement.getConfiguration().getEnvironment().getDataSource();
-                String dbType = dataSource.getConnection().getMetaData().getDriverName();
-                metaStatementHandler.setValue("delegate.boundSql.sql", buildPageSql(boundSql.getSql(), baseModel,dbType));
+                metaStatementHandler.setValue("delegate.boundSql.sql", buildPageSql(boundSql.getSql(), baseModel));
             }
         }
         return invocation.proceed();
@@ -81,12 +77,6 @@ public class MybatisHelper extends AbsStatementHandlerInterceptor {
         try {
             countStmt = connection.prepareStatement(countSql);
             BoundSql countBS = new BoundSql(mappedStatement.getConfiguration(), countSql, boundSql.getParameterMappings(), boundSql.getParameterObject());
-            for(ParameterMapping mapping:boundSql.getParameterMappings()){
-                String prop=mapping.getProperty();
-                if (boundSql.hasAdditionalParameter(prop)) {
-                    countBS.setAdditionalParameter(prop,boundSql.getAdditionalParameter(prop));
-                }
-            }
             ParameterHandler parameterHandler = new DefaultParameterHandler(mappedStatement, countBS.getParameterObject(), countBS);
             parameterHandler.setParameters(countStmt);
             rs = countStmt.executeQuery();
@@ -119,29 +109,12 @@ public class MybatisHelper extends AbsStatementHandlerInterceptor {
      * @param baseModel
      * @return
      */
-    private String buildPageSql(String sql, BaseModel baseModel, String dbType) {
+    private String buildPageSql(String sql, BaseModel baseModel) {
         StringBuilder sqlBuilder = new StringBuilder();
-        baseModel.setBegin((baseModel.getPage() - 1) * baseModel.getRows());
-        baseModel.setEnd(baseModel.getPage() * baseModel.getRows());
-        //默认oracle数据库
-        if(dbType == null || "".equals(dbType) || dbType.toLowerCase().contains("oracle")){
-            sqlBuilder.append("select * from(select h.*,rownum rn from (");
-            sqlBuilder.append(sql);
-            sqlBuilder.append(" ) h where rownum &lt;=").append(baseModel.getEnd()).append(") where rn> ").append(baseModel.getBegin());
-        }else{
-            if(dbType.toLowerCase().contains("mysql")){
-                sqlBuilder.append(sql);
-                sqlBuilder.append(" limit ").append(baseModel.getBegin()).append(",").append(baseModel.getEnd());
-            }else {
-                //todo 其他情况继续判断添加
-                sqlBuilder.append(sql);
-                sqlBuilder.append(" limit ").append(baseModel.getRows()).append(" offset ").append(baseModel.getBegin());
-            }
-        }
+        sqlBuilder.append(sql);
+        sqlBuilder.append(" limit ").append(baseModel.getRows()).append(" offset ").append(baseModel.getBegin());
         return sqlBuilder.toString();
     }
-
-
 
     private String buildAuthoritySql(String sql,Map<String, String[]> dataAuthority){
         StringBuilder sqlBuilder = new StringBuilder();
