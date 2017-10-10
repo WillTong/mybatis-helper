@@ -2,20 +2,25 @@ package com.github.mybatis.helper;
 
 import com.github.mybatis.helper.annotation.Authority;
 import com.github.mybatis.helper.annotation.Page;
+import com.github.mybatis.helper.dialect.DialectHandler;
+import com.github.mybatis.helper.dialect.helper.Dialect;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
+import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.plugin.Intercepts;
 import org.apache.ibatis.plugin.Invocation;
 import org.apache.ibatis.plugin.Signature;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
 
+import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -25,6 +30,7 @@ import java.util.Map;
  */
 @Intercepts({@Signature(type = StatementHandler.class, method = "prepare", args = {Connection.class, Integer.class})})
 public class MybatisHelper extends AbsStatementHandlerInterceptor {
+    private Dialect dialect;
 
     @Override
     protected Object doIntercept(Invocation invocation, MetaObject metaStatementHandler, MappedStatement mappedStatement, Method method) throws Throwable {
@@ -55,7 +61,13 @@ public class MybatisHelper extends AbsStatementHandlerInterceptor {
                     int totalCount = countTotal((Connection) invocation.getArgs()[0], mappedStatement, boundSql);
                     baseModel.setTotal(totalCount);
                 }
-                metaStatementHandler.setValue("delegate.boundSql.sql", buildPageSql(boundSql.getSql(), baseModel));
+                if(dialect==null){
+                    dialect=DialectHandler.getDialect(mappedStatement);
+                    if(dialect==null){
+                        throw new RuntimeException("无法分析断言！");
+                    }
+                }
+                metaStatementHandler.setValue("delegate.boundSql.sql", dialect.buildPageSql(boundSql.getSql(), baseModel));
             }
         }
         return invocation.proceed();
@@ -77,6 +89,12 @@ public class MybatisHelper extends AbsStatementHandlerInterceptor {
         try {
             countStmt = connection.prepareStatement(countSql);
             BoundSql countBS = new BoundSql(mappedStatement.getConfiguration(), countSql, boundSql.getParameterMappings(), boundSql.getParameterObject());
+            for(ParameterMapping mapping:boundSql.getParameterMappings()){
+                String prop=mapping.getProperty();
+                if (boundSql.hasAdditionalParameter(prop)) {
+                    countBS.setAdditionalParameter(prop,boundSql.getAdditionalParameter(prop));
+                }
+            }
             ParameterHandler parameterHandler = new DefaultParameterHandler(mappedStatement, countBS.getParameterObject(), countBS);
             parameterHandler.setParameters(countStmt);
             rs = countStmt.executeQuery();
@@ -99,20 +117,6 @@ public class MybatisHelper extends AbsStatementHandlerInterceptor {
      */
     private String buildCountSql(String sql) {
         StringBuilder sqlBuilder = new StringBuilder("select count(1) from (").append(sql).append(") as total ");
-        return sqlBuilder.toString();
-    }
-
-    /**
-     * 创建分页sql
-     *
-     * @param sql
-     * @param baseModel
-     * @return
-     */
-    private String buildPageSql(String sql, BaseModel baseModel) {
-        StringBuilder sqlBuilder = new StringBuilder();
-        sqlBuilder.append(sql);
-        sqlBuilder.append(" limit ").append(baseModel.getRows()).append(" offset ").append(baseModel.getBegin());
         return sqlBuilder.toString();
     }
 
