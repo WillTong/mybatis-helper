@@ -6,3 +6,10 @@ jdk:
 install: mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true
 
 script: mvn test
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
+branches:
+  only:
+    - master
