@@ -39,7 +39,7 @@ public interface ExampleMapper {
     List<Example> query(Example example);
 }
 ```
-##数据权限
+## 数据权限
 - 同样实体类继承BaseModel
 - 在查询的实体中放入dataAuthority。map集合中的key是表的列名，value是关联数组。最后生成的sql会in这个数组，来实现数据权限的过滤。
 例如：
