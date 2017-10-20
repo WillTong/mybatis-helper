@@ -2,6 +2,7 @@
 
 [![Build Status](http://img.shields.io/travis/WillTong/mybatis-helper.svg?branch=master)](http://img.shields.io/travis/WillTong/mybatis-helper.svg?branch=master)
 [![codecov](https://codecov.io/github/WillTong/mybatis-helper/coverage.svg?branch=master)](https://codecov.io/github/WillTong/mybatis-helper?branch=master)
+[![Dependency Status](https://img.shields.io/versioneye/d/WillTong/mybatis-helper.svg)](https://img.shields.io/versioneye/d/WillTong/mybatis-helper.svg)
 [![License](https://img.shields.io/github/license/WillTong/mybatis-helper.svg)](LICENSE)
 
 mybatis的工具类，主要用来填充分页功能和数据权限功能。
