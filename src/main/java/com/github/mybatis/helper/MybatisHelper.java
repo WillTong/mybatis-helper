@@ -116,7 +116,7 @@ public class MybatisHelper extends AbsStatementHandlerInterceptor {
      * @return
      */
     private String buildCountSql(String sql) {
-        StringBuilder sqlBuilder = new StringBuilder("select count(1) from (").append(sql).append(") ");
+        StringBuilder sqlBuilder = new StringBuilder("select count(1) from (").append(sql).append(") as total ");
         return sqlBuilder.toString();
     }
 

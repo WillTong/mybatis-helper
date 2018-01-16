@@ -7,7 +7,7 @@
 
     <groupId>com.github.willtong</groupId>
     <artifactId>mybatis-helper</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.1</version>
 
     <licenses>
         <license>
