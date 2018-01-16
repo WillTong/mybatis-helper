@@ -14,7 +14,7 @@ public class MySqlDialect implements Dialect {
         baseModel.setBegin((baseModel.getPage() - 1) * baseModel.getRows());
         baseModel.setEnd(baseModel.getPage() * baseModel.getRows());
         sqlBuilder.append(sql);
-        sqlBuilder.append(" limit ").append(baseModel.getBegin()).append(",").append(baseModel.getEnd());
+        sqlBuilder.append(" limit ").append(baseModel.getBegin()).append(",").append(baseModel.getRows());
         return sqlBuilder.toString();
     }
 }
