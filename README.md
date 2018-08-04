@@ -6,7 +6,7 @@
 [![License](https://img.shields.io/github/license/WillTong/mybatis-helper.svg)](LICENSE)
 
 mybatis的工具类，主要用来增加分页功能和数据权限功能。
-
+[TOC]
 * [分页](#分页)
 * [数据权限](#数据权限)
 
