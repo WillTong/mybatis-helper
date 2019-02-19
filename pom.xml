@@ -4,6 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
+    <packaging>pom</packaging>
+    <modules>
+        <module>mybatis-helper-core</module>
+        <module>mybatis-helper-page</module>
+        <module>mybatis-helper-datascope</module>
+        <module>mybatis-helper-commonfield</module>
+        <module>mybatis-helper-dolog</module>
+    </modules>
 
     <parent>
         <groupId>org.sonatype.oss</groupId>
@@ -13,7 +21,7 @@
 
     <groupId>com.github.willtong</groupId>
     <artifactId>mybatis-helper</artifactId>
-    <version>1.1.1</version>
+    <version>2.0</version>
 
     <name>${project.groupId}:${project.artifactId}</name>
     <url>https://github.com/WillTong/mybatis-helper</url>
@@ -43,15 +51,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis</artifactId>
-            <version>3.4.2</version>
-            <scope>compile</scope>
-        </dependency>
-    </dependencies>
 
     <build>
         <plugins>
