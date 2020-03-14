@@ -7,25 +7,25 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-public @interface CommonFieldFilterSettings {
+public @interface CommonFieldSettings {
     /**
      * 新增操作人存储字段
      * @return
      */
-    String insertPersionColumn() default "";
+    String insertPersionColumn() default "CREATED_BY";
     /**
      * 新增操作日期存储字段
      * @return
      */
-    String insertDateColumn() default "";
+    String insertDateColumn() default "CREATED_DATE";
     /**
      * 修改操作人存储字段
      * @return
      */
-    String updatePersionColumn() default "";
+    String updatePersionColumn() default "LAST_UPD_BY";
     /**
      * 修改操作日期存储字段
      * @return
      */
-    String updateDateColumn() default "";
+    String updateDateColumn() default "LAST_UPD_DATE";
 }

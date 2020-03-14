@@ -1,10 +1,12 @@
-package com.github.mybatis.helper.core;
+package com.github.mybatis.helper.core.sql;
 
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,6 +18,9 @@ import java.sql.SQLException;
  * @author will
  */
 public class ExecuteHelper {
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     private Connection connection;
     private MappedStatement mappedStatement;
     private BoundSql boundSql;
@@ -56,20 +61,20 @@ public class ExecuteHelper {
             resultSet = pstmt.executeQuery();
             return action.doAction(resultSet);
         }catch(Exception e){
-            e.printStackTrace();
+            logger.error("内部sql执行错误！",e);
         }finally {
             if(resultSet != null) {
                 try {
                     resultSet.close();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    logger.error("内部resultSet无法关闭！",e);
                 }
             }
             if(pstmt != null) {
                 try {
                     pstmt.close();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    logger.error("内部PreparedStatement无法关闭！",e);
                 }
             }
         }
@@ -94,20 +99,20 @@ public class ExecuteHelper {
             }
             return pstmt.executeUpdate(sql);
         }catch(Exception e){
-            e.printStackTrace();
+            logger.error("内部sql执行错误！",e);
         }finally {
             if(resultSet != null) {
                 try {
                     resultSet.close();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    logger.error("内部resultSet无法关闭！",e);
                 }
             }
             if(pstmt != null) {
                 try {
                     pstmt.close();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    logger.error("内部PreparedStatement无法关闭！",e);
                 }
             }
         }

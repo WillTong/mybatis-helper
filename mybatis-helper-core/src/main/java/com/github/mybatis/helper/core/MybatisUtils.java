@@ -76,7 +76,7 @@ public class MybatisUtils {
      * @return
      */
     public static int matchMappedStatementId(String mappedStatementId,String[] mappedStatementIdMatches){
-        if(mappedStatementIdMatches==null){
+        if(mappedStatementIdMatches==null||mappedStatementIdMatches.length==0){
             return -1;
         }
         for(String mappedStatementIdMatch:mappedStatementIdMatches){

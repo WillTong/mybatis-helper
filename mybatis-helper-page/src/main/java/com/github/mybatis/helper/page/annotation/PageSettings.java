@@ -6,8 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
-public @interface PageFilterSettings {
+@Target({ElementType.TYPE,ElementType.METHOD})
+public @interface PageSettings {
     /**
      * 如果是OUTER则在外面套一层（）写分页语句，如果是INNER则在里面直接拼上
      * @return

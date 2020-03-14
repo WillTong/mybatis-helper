@@ -1,7 +1,5 @@
 package com.github.mybatis.helper.dolog.annotation;
 
-import com.github.mybatis.helper.dolog.DoLogFilter;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -10,6 +8,12 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 public @interface DoLogSettings {
+    /**
+     * 日志表主键生成策略
+     * * @return
+     */
+    PrimarykeyGenerationStrategy primarykeyGenerationStrategy() default PrimarykeyGenerationStrategy.INCREAMENT;
+
     /**
      * 业务表主键列
      * @return

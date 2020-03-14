@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE,ElementType.METHOD})
-public @interface DataScopeFilterSettings {
+public @interface DataScopeSettings {
     /**
      * 自定义dataScope生效的字段
      * @return
@@ -15,8 +15,20 @@ public @interface DataScopeFilterSettings {
     ActiveScopeField[] activeScopeFields() default {};
 
     /**
-     * 自定义外层select语句
+     * sql风格
      * @return
      */
-    String select() default "T.*";
+    DataScopeSqlStyle dataScopeSqlStyle() default DataScopeSqlStyle.OUTER;
+
+    /**
+     * 外部sql配置
+     * @return
+     */
+    OuterSqlStyleSettings outerSqlStyleSettings() default @OuterSqlStyleSettings;
+
+    /**
+     * 内部sql配置
+     * @return
+     */
+    InnerSqlStyleSettings innerSqlStyleSettings() default @InnerSqlStyleSettings;
 }
