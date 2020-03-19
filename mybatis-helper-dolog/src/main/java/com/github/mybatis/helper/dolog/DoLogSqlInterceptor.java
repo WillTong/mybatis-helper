@@ -75,12 +75,12 @@ public class DoLogSqlInterceptor extends SqlInterceptor {
             List<Column> columnList=new ArrayList<>();
             List<Expression> expressions=new ArrayList<>();
 
-            if(activeSettings.logTypeColumn()!=null){
+            if(activeSettings.logTypeColumn()!=null&&activeSettings.logTypeColumn().length()!=0){
                 columnList.add(new Column(activeSettings.logTypeColumn()));
                 expressions.add(new StringValue(mappedStatement.getSqlCommandType().name()));
             }
 
-            if(activeSettings.logPersonColumn()!=null){
+            if(activeSettings.logPersonColumn()!=null&&activeSettings.logPersonColumn().length()!=0){
                 columnList.add(new Column(activeSettings.logPersonColumn()));
                 if(filterParam instanceof String){
                     expressions.add(new StringValue(filterParam.toString()));
@@ -89,7 +89,7 @@ public class DoLogSqlInterceptor extends SqlInterceptor {
                 }
             }
 
-            if(activeSettings.logDateColumn()!=null){
+            if(activeSettings.logDateColumn()!=null&&activeSettings.logDateColumn().length()!=0){
                 columnList.add(new Column(activeSettings.logDateColumn()));
                 expressions.add(dialect.buildNowExpression());
             }
@@ -101,17 +101,17 @@ public class DoLogSqlInterceptor extends SqlInterceptor {
                 String logTableName=generateTableName(activeSettings, recordTableName);
                 insert.setTable(new Table(logTableName));
 
-                if(activeSettings.logPrimaryKeyColumn()!=null){
+                if(activeSettings.logPrimaryKeyColumn()!=null&&activeSettings.logPrimaryKeyColumn().length()!=0){
                     columnList.add(new Column(activeSettings.logPrimaryKeyColumn()));
                     expressions.add(dialect.buildUUIDExpression());
                 }
 
-                if(activeSettings.logRecordTableNameColumn()!=null){
+                if(activeSettings.logRecordTableNameColumn()!=null&&activeSettings.logRecordTableNameColumn().length()!=0){
                     columnList.add(new Column(activeSettings.logRecordTableNameColumn()));
                     expressions.add(new StringValue(recordTableName));
                 }
 
-                if(activeSettings.logRecordPrimaryKeyColumn()!=null){
+                if(activeSettings.logRecordPrimaryKeyColumn()!=null&&activeSettings.logRecordPrimaryKeyColumn().length()!=0){
                     columnList.add(new Column(activeSettings.logRecordPrimaryKeyColumn()));
                     int index=0;
                     for(int i=0;i<statement.getColumns().size();i++){
@@ -135,7 +135,7 @@ public class DoLogSqlInterceptor extends SqlInterceptor {
                     }
                 }
 
-                if(activeSettings.logContentColumn()!=null){
+                if(activeSettings.logContentColumn()!=null&&activeSettings.logContentColumn().length()!=0){
                     columnList.add(new Column(activeSettings.logContentColumn()));
                     Map<String,Object> jsonMap=new HashMap<>();
                     int index=0;
@@ -159,18 +159,18 @@ public class DoLogSqlInterceptor extends SqlInterceptor {
                 String logTableName=generateTableName(activeSettings,recordTableName);
                 insert.setTable(new Table(logTableName));
 
-                if(activeSettings.logPrimaryKeyColumn()!=null){
+                if(activeSettings.logPrimaryKeyColumn()!=null&&activeSettings.logPrimaryKeyColumn().length()!=0){
                     columnList.add(new Column(activeSettings.logPrimaryKeyColumn()));
                     expressions.add(dialect.buildUUIDExpression());
                 }
 
-                if(activeSettings.logRecordTableNameColumn()!=null){
+                if(activeSettings.logRecordTableNameColumn()!=null&&activeSettings.logRecordTableNameColumn().length()!=0){
                     columnList.add(new Column(activeSettings.logRecordTableNameColumn()));
                     expressions.add(new StringValue(recordTableName));
                 }
 
                 Expression recordPrimaryKeyExpression=null;
-                if(activeSettings.logRecordPrimaryKeyColumn()!=null){
+                if(activeSettings.logRecordPrimaryKeyColumn()!=null&&activeSettings.logRecordPrimaryKeyColumn().length()!=0){
                     columnList.add(new Column(activeSettings.logRecordPrimaryKeyColumn()));
                     ParameterMapping parameterMapping=parameterMappingList.get(parameterMappingList.size()-1);
                     if(parameterMapping.getJavaType().getName().equals(String.class.getName())){
@@ -182,7 +182,7 @@ public class DoLogSqlInterceptor extends SqlInterceptor {
                     }
                 }
 
-                if(activeSettings.logContentColumn()!=null){
+                if(activeSettings.logContentColumn()!=null&&activeSettings.logContentColumn().length()!=0){
                     columnList.add(new Column(activeSettings.logContentColumn()));
                     Map<String,Object> jsonMap=new HashMap<>();
                     int index=0;
@@ -199,7 +199,7 @@ public class DoLogSqlInterceptor extends SqlInterceptor {
                     expressions.add(new StringValue(JSONObject.toJSONString(jsonMap)));
                 }
 
-                if(activeSettings.logRecordContentColumn()!=null&&activeSettings.logRecordPrimaryKeyColumn()!=null){
+                if(activeSettings.logRecordContentColumn()!=null&&activeSettings.logRecordContentColumn().length()!=0){
                     columnList.add(new Column(activeSettings.logRecordContentColumn()));
                     List<SelectItem> selectColumnList=new ArrayList<>();
                     for(int i=0;i<statement.getColumns().size();i++){
@@ -236,18 +236,18 @@ public class DoLogSqlInterceptor extends SqlInterceptor {
                 String logTableName=generateTableName(activeSettings,recordTableName);
                 insert.setTable(new Table(logTableName));
 
-                if(activeSettings.logPrimaryKeyColumn()!=null){
+                if(activeSettings.logPrimaryKeyColumn()!=null&&activeSettings.logPrimaryKeyColumn().length()!=0){
                     columnList.add(new Column(activeSettings.logPrimaryKeyColumn()));
                     expressions.add(dialect.buildUUIDExpression());
                 }
 
-                if(activeSettings.logRecordTableNameColumn()!=null){
+                if(activeSettings.logRecordTableNameColumn()!=null&&activeSettings.logRecordTableNameColumn().length()!=0){
                     columnList.add(new Column(activeSettings.logRecordTableNameColumn()));
                     expressions.add(new StringValue(recordTableName));
                 }
 
                 Expression recordPrimaryKeyExpression=null;
-                if(activeSettings.logRecordPrimaryKeyColumn()!=null){
+                if(activeSettings.logRecordPrimaryKeyColumn()!=null&&activeSettings.logRecordPrimaryKeyColumn().length()!=0){
                     columnList.add(new Column(activeSettings.logRecordPrimaryKeyColumn()));
                     if(parameter instanceof String){
                         recordPrimaryKeyExpression=new StringValue(parameter.toString());
@@ -303,15 +303,15 @@ public class DoLogSqlInterceptor extends SqlInterceptor {
     }
 
     private String generateTableName(DoLogSettings settings, String recordTableName) {
-        if(settings.logTableName()!=null){
+        if(settings.logTableName()!=null&&settings.logTableName().length()!=0){
             return settings.logTableName();
         }
         StringBuilder tableNameBuilder=new StringBuilder();
-        if(settings.logTableNamePrefix()!=null){
+        if(settings.logTableNamePrefix()!=null&&settings.logTableNamePrefix().length()!=0){
             tableNameBuilder.append(settings.logTableNamePrefix());
         }
         tableNameBuilder.append(recordTableName);
-        if(settings.logTableNamePostfix()!=null){
+        if(settings.logTableNamePostfix()!=null&&settings.logTableNamePostfix().length()!=0){
             tableNameBuilder.append(settings.logTableNamePostfix());
         }
         return tableNameBuilder.toString();
