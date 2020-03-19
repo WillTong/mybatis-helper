@@ -5,8 +5,12 @@ import com.github.mybatis.helper.core.ReflectUtil;
 import com.github.mybatis.helper.core.sql.ExecuteHelper;
 import com.github.mybatis.helper.core.sql.SqlInterceptor;
 import com.github.mybatis.helper.dolog.annotation.DoLogSettings;
-import com.github.mybatis.helper.dolog.annotation.PrimarykeyGenerationStrategy;
-import net.sf.jsqlparser.expression.*;
+import com.github.mybatis.helper.dolog.dialect.DialectHandler;
+import com.github.mybatis.helper.dolog.dialect.helper.Dialect;
+import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.expression.JdbcParameter;
+import net.sf.jsqlparser.expression.LongValue;
+import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
 import net.sf.jsqlparser.expression.operators.relational.ExpressionList;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
@@ -40,9 +44,11 @@ import java.util.*;
  * @author will
  */
 @Intercepts({@Signature(type = StatementHandler.class, method = "prepare", args = {Connection.class, Integer.class})})
-@DoLogSettings
+@DoLogSettings(logTableNamePostfix="_LOG")
 public class DoLogSqlInterceptor extends SqlInterceptor {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    private Dialect dialect;
 
     public DoLogSqlInterceptor() {
         super();
@@ -54,7 +60,9 @@ public class DoLogSqlInterceptor extends SqlInterceptor {
     @Override
     public String doSqlFilter(String originalSql, Object filterParam, MappedStatement mappedStatement, RowBounds rowBounds, BoundSql boundSql, ExecuteHelper executeHelper) {
         try{
-
+            if(dialect==null){
+                dialect = DialectHandler.getDialect(super.dbType);
+            }
             DoLogSettings activeSettings=getSetting(mappedStatement.getId());
             Object parameter=boundSql.getParameterObject();
             if(parameter instanceof MapperMethod.ParamMap){
@@ -72,8 +80,8 @@ public class DoLogSqlInterceptor extends SqlInterceptor {
                 expressions.add(new StringValue(mappedStatement.getSqlCommandType().name()));
             }
 
-            if(activeSettings.logPersionColumn()!=null){
-                columnList.add(new Column(activeSettings.logPersionColumn()));
+            if(activeSettings.logPersonColumn()!=null){
+                columnList.add(new Column(activeSettings.logPersonColumn()));
                 if(filterParam instanceof String){
                     expressions.add(new StringValue(filterParam.toString()));
                 }else{
@@ -83,7 +91,7 @@ public class DoLogSqlInterceptor extends SqlInterceptor {
 
             if(activeSettings.logDateColumn()!=null){
                 columnList.add(new Column(activeSettings.logDateColumn()));
-                expressions.add(new TimestampValue(" "+simpleDateFormat.format(new Date())+" "));
+                expressions.add(dialect.buildNowExpression());
             }
             if(mappedStatement.getSqlCommandType()==SqlCommandType.INSERT){
                 //插入
@@ -95,11 +103,7 @@ public class DoLogSqlInterceptor extends SqlInterceptor {
 
                 if(activeSettings.logPrimaryKeyColumn()!=null){
                     columnList.add(new Column(activeSettings.logPrimaryKeyColumn()));
-                    if(activeSettings.primarykeyGenerationStrategy()!=null){
-                        if(activeSettings.primarykeyGenerationStrategy()==PrimarykeyGenerationStrategy.SEQUENCE){
-                            expressions.add(new HexValue("SEQ_"+logTableName+".NEXTVAL"));
-                        }
-                    }
+                    expressions.add(dialect.buildUUIDExpression());
                 }
 
                 if(activeSettings.logRecordTableNameColumn()!=null){
@@ -157,11 +161,7 @@ public class DoLogSqlInterceptor extends SqlInterceptor {
 
                 if(activeSettings.logPrimaryKeyColumn()!=null){
                     columnList.add(new Column(activeSettings.logPrimaryKeyColumn()));
-                    if(activeSettings.primarykeyGenerationStrategy()!=null){
-                        if(activeSettings.primarykeyGenerationStrategy()== PrimarykeyGenerationStrategy.SEQUENCE){
-                            expressions.add(new HexValue("SEQ_"+logTableName+".NEXTVAL"));
-                        }
-                    }
+                    expressions.add(dialect.buildUUIDExpression());
                 }
 
                 if(activeSettings.logRecordTableNameColumn()!=null){
@@ -238,11 +238,7 @@ public class DoLogSqlInterceptor extends SqlInterceptor {
 
                 if(activeSettings.logPrimaryKeyColumn()!=null){
                     columnList.add(new Column(activeSettings.logPrimaryKeyColumn()));
-                    if(activeSettings.primarykeyGenerationStrategy()!=null){
-                        if(activeSettings.primarykeyGenerationStrategy()==PrimarykeyGenerationStrategy.SEQUENCE){
-                            expressions.add(new HexValue("SEQ_"+logTableName+".NEXTVAL"));
-                        }
-                    }
+                    expressions.add(dialect.buildUUIDExpression());
                 }
 
                 if(activeSettings.logRecordTableNameColumn()!=null){

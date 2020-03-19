@@ -42,7 +42,7 @@ public class PageSqlInterceptor extends SqlInterceptor {
     public String doSqlFilter(String originalSql,Object filterParam,MappedStatement mappedStatement,RowBounds rowBounds,BoundSql boundSql,ExecuteHelper executeHelper) {
         if(rowBounds.getLimit()!=new RowBounds().getLimit()) {
             if(dialect==null){
-                dialect = DialectHandler.getDialect(mappedStatement);
+                dialect = DialectHandler.getDialect(super.dbType);
             }
             Long count = null;
             try {

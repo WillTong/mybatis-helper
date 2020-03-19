@@ -46,7 +46,7 @@ public class CommonFieldSqlInterceptor extends SqlInterceptor {
         try{
             CommonFieldSettings activeSettings=getSetting(mappedStatement.getId());
             if(dialect==null){
-                dialect = DialectHandler.getDialect(mappedStatement);
+                dialect = DialectHandler.getDialect(super.dbType);
             }
             Expression today= dialect.buildNowExpression();
             if(mappedStatement.getSqlCommandType()==SqlCommandType.UPDATE){

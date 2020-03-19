@@ -1,8 +1,8 @@
-package com.github.mybatis.helper.commonfield.dialect;
+package com.github.mybatis.helper.dolog.dialect;
 
-import com.github.mybatis.helper.commonfield.dialect.helper.Dialect;
-import com.github.mybatis.helper.commonfield.dialect.helper.MySqlDialect;
-import com.github.mybatis.helper.commonfield.dialect.helper.OracleDialect;
+import com.github.mybatis.helper.dolog.dialect.helper.Dialect;
+import com.github.mybatis.helper.dolog.dialect.helper.MySqlDialect;
+import com.github.mybatis.helper.dolog.dialect.helper.OracleDialect;
 
 import java.util.HashMap;
 import java.util.Map;

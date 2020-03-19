@@ -25,6 +25,7 @@ public abstract class AbstractInterceptor implements Interceptor {
     protected Map<String, Annotation> settings;
     protected Annotation defaultSetting;
     protected Class settingsAnnotation;
+    protected String dbType;
 
     public AbstractInterceptor(){
         settings=new HashMap<>();
@@ -77,6 +78,11 @@ public abstract class AbstractInterceptor implements Interceptor {
         }
         if(properties.get("paramName")!=null){
             this.paramName=properties.get("paramName").toString();
+        }
+        if(properties.get("dbType")!=null){
+            this.dbType=properties.get("dbType").toString();
+        }else{
+            this.dbType="mysql";
         }
         if(properties.get("defaultSettingClass")!=null){
             try {
