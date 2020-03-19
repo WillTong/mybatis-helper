@@ -1,5 +1,6 @@
 package com.github.mybatis.helper.core;
 
+import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.plugin.Intercepts;
 import org.apache.ibatis.plugin.Invocation;
@@ -7,6 +8,9 @@ import org.apache.ibatis.plugin.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -81,8 +85,6 @@ public abstract class AbstractInterceptor implements Interceptor {
         }
         if(properties.get("dbType")!=null){
             this.dbType=properties.get("dbType").toString();
-        }else{
-            this.dbType="mysql";
         }
         if(properties.get("defaultSettingClass")!=null){
             try {

@@ -15,7 +15,9 @@ import org.apache.ibatis.session.RowBounds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * mybatis拦截.
@@ -35,6 +37,10 @@ public abstract class SqlInterceptor extends AbstractInterceptor {
         MappedStatement mappedStatement=(MappedStatement) metaStatementHandler.getValue("delegate.mappedStatement");
         RowBounds rowBounds=(RowBounds) metaStatementHandler.getValue("delegate.rowBounds");
         BoundSql boundSql=(BoundSql)metaStatementHandler.getValue("delegate.boundSql");
+        //dbType
+        if(super.dbType==null){
+            super.dbType=getDbType(mappedStatement);
+        }
         Object filterParam=null;
         if(paramName!=null&&paramName.length()!=0){
             filterParam= MybatisThreadHelper.getVariable(paramName);
@@ -51,6 +57,33 @@ public abstract class SqlInterceptor extends AbstractInterceptor {
             metaStatementHandler.setValue("delegate.boundSql.sql",doSqlFilter(boundSql.getSql(),filterParam,mappedStatement,rowBounds,boundSql,executeHelper));
         }
         return invocation.proceed();
+    }
+
+    private static String getDbType(MappedStatement mappedStatement){
+        DataSource dataSource = mappedStatement.getConfiguration().getEnvironment().getDataSource();
+        Connection conn = null;
+        try {
+            conn = dataSource.getConnection();
+            String jdbcUrl=conn.getMetaData().getURL();
+            if (jdbcUrl.indexOf("mysql") != -1) {
+                return "mysql";
+            }else if(jdbcUrl.indexOf("oracle") != -1){
+                return "oracle";
+            }else if(jdbcUrl.indexOf("postgresql") != -1){
+                return "postgresql";
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    //ignore
+                }
+            }
+        }
+        return "mysql";
     }
 
      /**
