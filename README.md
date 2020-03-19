@@ -61,6 +61,10 @@ mybatis:
 <property name="defaultSettingClass" value="com.xxx.SysApplication"></property>
 ```
 指定拦截器默认的配置注解所在的类。如果不配置则使用默认配置。在下面介绍各个拦截器的时候会说明它们的配置信息。
+```xml
+<property name="dbType" value="userId"></property>
+```
+指定数据库类型，oracle还是mysql，如果不写则使用jdbc的url来判断。
 #### 6.对于springboot可以使用defaultSettingClass来指定默认配置为application启动类。   
 
 ## 分页
