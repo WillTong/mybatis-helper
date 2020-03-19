@@ -112,7 +112,6 @@ public class DoLogSqlInterceptor extends SqlInterceptor {
                 }
 
                 if(activeSettings.logRecordPrimaryKeyColumn()!=null&&activeSettings.logRecordPrimaryKeyColumn().length()!=0){
-                    columnList.add(new Column(activeSettings.logRecordPrimaryKeyColumn()));
                     int index=0;
                     for(int i=0;i<statement.getColumns().size();i++){
                         Column column=statement.getColumns().get(i);
@@ -120,11 +119,14 @@ public class DoLogSqlInterceptor extends SqlInterceptor {
                         if(column.getColumnName().equals(activeSettings.recordPrimaryKey())){
                             if(expression instanceof JdbcParameter) {
                                 if(parameterMappingList.get(index).getJavaType().getName().equals(String.class.getName())){
+                                    columnList.add(new Column(activeSettings.logRecordPrimaryKeyColumn()));
                                     expressions.add(new StringValue(ReflectUtil.getFieldValue(parameter,parameterMappingList.get(index).getProperty()).toString()));
                                 }else {
+                                    columnList.add(new Column(activeSettings.logRecordPrimaryKeyColumn()));
                                     expressions.add(new LongValue(ReflectUtil.getFieldValue(parameter,parameterMappingList.get(index).getProperty()).toString()));
                                 }
                             }else {
+                                columnList.add(new Column(activeSettings.logRecordPrimaryKeyColumn()));
                                 expressions.add(expression);
                             }
                             break;
@@ -294,7 +296,6 @@ public class DoLogSqlInterceptor extends SqlInterceptor {
             ExpressionList expressionList=new ExpressionList();
             expressionList.setExpressions(expressions);
             insert.setItemsList(expressionList);
-
             executeHelper.exeUpdate(insert.toString(),false);
         }catch (Exception e){
             logger.error("无法生成操作日志，sql：{}，原因：{}",originalSql,e);
