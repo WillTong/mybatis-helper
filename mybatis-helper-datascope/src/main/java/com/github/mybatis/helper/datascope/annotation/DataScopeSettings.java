@@ -10,25 +10,25 @@ import java.lang.annotation.Target;
 public @interface DataScopeSettings {
     /**
      * 自定义dataScope生效的字段
-     * @return
+     * @return activeScopeFields
      */
     ActiveScopeField[] activeScopeFields() default {};
 
     /**
      * sql风格
-     * @return
+     * @return dataScopeSqlStyle
      */
     DataScopeSqlStyle dataScopeSqlStyle() default DataScopeSqlStyle.OUTER;
 
     /**
      * 外部sql配置
-     * @return
+     * @return outerSqlStyleSettings
      */
     OuterSqlStyleSettings outerSqlStyleSettings() default @OuterSqlStyleSettings;
 
     /**
      * 内部sql配置
-     * @return
+     * @return innerSqlStyleSettings
      */
     InnerSqlStyleSettings innerSqlStyleSettings() default @InnerSqlStyleSettings;
 }

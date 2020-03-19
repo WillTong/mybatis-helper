@@ -10,13 +10,13 @@ public @interface ActiveScopeField{
 
     /**
      * dataScope的Map的key
-     * @return
+     * @return key
      */
     String value();
 
     /**
      * 如果列名和dataScope不一致通过columnName指定新的列名
-     * @return
+     * @return columnName
      */
     String columnName() default "";
 }

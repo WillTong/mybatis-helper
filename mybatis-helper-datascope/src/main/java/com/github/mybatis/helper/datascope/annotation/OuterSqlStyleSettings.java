@@ -10,7 +10,7 @@ public @interface OuterSqlStyleSettings {
 
     /**
      * 自定义外层select语句
-     * @return
+     * @return select
      */
     String select() default "T.*";
 }

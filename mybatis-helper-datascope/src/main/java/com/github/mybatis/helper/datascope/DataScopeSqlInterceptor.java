@@ -33,8 +33,7 @@ import java.util.*;
 
 /**
  * 数据权限拦截器
- * <p>通过传入参数自动在sql拼上查询条件</p>
- * <p>拦截器传入参数类型为：Map<String,Object[]></p>
+ * 通过传入参数自动在sql拼上查询条件
  * @author will
  */
 @Intercepts({@Signature(type = StatementHandler.class, method = "prepare", args = {Connection.class, Integer.class})})
