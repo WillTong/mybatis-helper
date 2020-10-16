@@ -86,14 +86,17 @@ public class PageSqlInterceptor extends SqlInterceptor {
      */
     private String buildCountSql(String sql, PageSettings settings) throws JSQLParserException {
         if(settings.pageCountSqlParserType()==PageCountSqlParserType.INNER){
-            Select select = (Select) CCJSqlParserUtil.parse(sql);
-            PlainSelect plainSelect=(PlainSelect)select.getSelectBody();
-            plainSelect.getSelectItems().clear();
-            plainSelect.getSelectItems().add(new SelectExpressionItem(new Column("count(1)")));
-            return select.toString();
-        }else{
-            StringBuilder sqlBuilder = new StringBuilder("select count(1) from (").append(sql).append(")");
-            return sqlBuilder.toString();
+            try{
+                Select select = (Select) CCJSqlParserUtil.parse(sql);
+                PlainSelect plainSelect=(PlainSelect)select.getSelectBody();
+                plainSelect.getSelectItems().clear();
+                plainSelect.getSelectItems().add(new SelectExpressionItem(new Column("count(1)")));
+                return select.toString();
+            }catch(Exception e){
+                logger.error("无法使用内部sql查询数量，自动转为外部sql！原因：{}",e);
+            }
         }
+        StringBuilder sqlBuilder = new StringBuilder("select count(1) from (").append(sql).append(")");
+        return sqlBuilder.toString();
     }
 }

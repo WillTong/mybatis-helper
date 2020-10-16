@@ -49,6 +49,9 @@ public abstract class AbstractInterceptor implements Interceptor {
         for(Class clazz:classList) {
             for (Method method : clazz.getMethods()) {
                 String mappedStatementId=String.join(".",clazz.getName(),method.getName());
+                if(settings.containsKey(mappedStatementId)){
+                    logger.warn("mapper中的{}是重复的，这会覆盖已经存在的配置！",mappedStatementId);
+                }
                 if(method.isAnnotationPresent(this.settingsAnnotation)){
                     settings.put(mappedStatementId, method.getAnnotation(settingsAnnotation));
                 }else if(clazz.isAnnotationPresent(this.settingsAnnotation)){
@@ -70,6 +73,14 @@ public abstract class AbstractInterceptor implements Interceptor {
         return Plugin.wrap(target, this);
     }
 
+    /**
+     * 通用参数
+     * includeMapperIds 包含
+     * excludeMapperIds 排除
+     * paramName 配置对象名
+     * dbType 数据库类型
+     * @param properties
+     */
     @Override
     public void setProperties(Properties properties) {
         if(properties.getProperty("include")!=null){

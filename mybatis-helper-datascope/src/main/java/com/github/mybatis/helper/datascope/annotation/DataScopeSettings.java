@@ -8,6 +8,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE,ElementType.METHOD})
 public @interface DataScopeSettings {
+    boolean onlyUseSmallScope() default true;
+
     /**
      * 自定义dataScope生效的字段
      * @return activeScopeFields
