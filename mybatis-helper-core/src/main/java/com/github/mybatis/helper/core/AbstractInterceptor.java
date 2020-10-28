@@ -57,7 +57,9 @@ public abstract class AbstractInterceptor implements Interceptor {
                 }else if(clazz.isAnnotationPresent(this.settingsAnnotation)){
                     settings.put(mappedStatementId, clazz.getAnnotation(settingsAnnotation));
                 }else{
-                    settings.put(mappedStatementId, defaultSetting);
+                    if(!settings.containsKey(mappedStatementId)){
+                        settings.put(mappedStatementId, defaultSetting);
+                    }
                 }
             }
         }
