@@ -215,6 +215,7 @@ public class DataScopeSqlHelper {
      */
     private static Expression addConditionExpression(String column, Object[] value) {
         if(value.length>1){
+            value=uniqueValue(value);
             InExpression in=new InExpression();
             in.setLeftExpression(new Column(column));
             List<Expression> expList=new ArrayList<>();
@@ -243,5 +244,11 @@ public class DataScopeSqlHelper {
         }else{
             return new LongValue(value.toString());
         }
+    }
+
+    private static Object[] uniqueValue(Object[] values){
+        Set set=new HashSet();
+        set.addAll(Arrays.asList(values));
+        return set.toArray();
     }
 }
