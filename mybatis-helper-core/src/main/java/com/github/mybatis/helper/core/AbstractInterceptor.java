@@ -86,22 +86,22 @@ public abstract class AbstractInterceptor implements Interceptor {
     @Override
     public void setProperties(Properties properties) {
         if(properties.getProperty("include")!=null){
-            this.includeMapperIds=properties.getProperty("include").split(",");
+            this.includeMapperIds=propertiesTrim(properties.getProperty("include").split(","));
         }else{
             this.includeMapperIds=new String[]{"*"};
         }
         if(properties.getProperty("exclude")!=null){
-            this.excludeMapperIds=properties.getProperty("exclude").split(",");
+            this.excludeMapperIds=propertiesTrim(properties.getProperty("exclude").split(","));
         }
         if(properties.get("paramName")!=null){
-            this.paramName=properties.get("paramName").toString();
+            this.paramName=properties.get("paramName").toString().trim();
         }
         if(properties.get("dbType")!=null){
-            this.dbType=properties.get("dbType").toString();
+            this.dbType=properties.get("dbType").toString().trim();
         }
         if(properties.get("defaultSettingClass")!=null){
             try {
-                this.setDefaultSetting(Class.forName(properties.get("defaultSettingClass").toString()));
+                this.setDefaultSetting(Class.forName(properties.get("defaultSettingClass").toString().trim()));
             } catch (ClassNotFoundException e) {
                 this.setDefaultSetting(this.getClass());
             }
@@ -133,5 +133,12 @@ public abstract class AbstractInterceptor implements Interceptor {
         }
         logger.error("没有指定默认配置！");
         return null;
+    }
+
+    private String[] propertiesTrim(String[] strs){
+        for(int i=0;i<strs.length;i++){
+            strs[i]=strs[i].trim();
+        }
+        return strs;
     }
 }
