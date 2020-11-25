@@ -89,7 +89,7 @@ selectByExample是mybatis自动生成的方法本身是不带分页的，通过�
 ```java
 MybatisThreadHelper.putVariable("dataScope",DataScope);
 ```
-在执行查询之前先传入权限对象，默认的是dataScope，可以通过param来指定。值必须是Map<String,Object[]>类型。如果Object数组只有一个值那么是where a=1这种形式，如果是多个值则是where a in (1,2)。如果MybatisThreadHelper里面没有dataScope或者值是null，那么则不触发数据权限过滤器。
+在执行查询之前先传入权限对象，默认的是dataScope，可以通过param来指定。值必须是List<Map<String,Object[]>>类型。如果Object数组只有一个值那么是where a=1这种形式，如果是多个值则是where a in (1,2)。如果MybatisThreadHelper里面没有dataScope或者值是null，那么则不触发数据权限过滤器。
 #### 3.配置  
 DataScopeSettings注解可以加在类上或方法上。如果都加则以方法上的配置为准。
 activeScopeFields配置可以自定义dataScope生效的字段。例如
@@ -101,6 +101,7 @@ public interface SysProjectMapper
 这个配置的含义是让dataScope中key为DEPT_ID和PROJECT_ID的条件生效并且将PROJECT_ID改为ID。如果map的结构是[{"DEPT_ID":"1"},{"PROJECT_ID":"2"},{"WORK_ID":"3"}]则最后生成的sql是where DEPT_ID=1 and ID=2   
 - dataScopeSqlStyle配置：如果是inner可以指定使用直接在where后拼上and，如果是outter则在外面套上select T.* from (xxx) T where 语句。注：inner只能支持简单的sql拼接，建议使用outter。   
 - outerSqlStyleSettings配置：dataScopeSqlStyle为outter时的配置。select属性是覆盖select T.* from (xxx) where 语句中的T.*。   
+- onlyUseSmallScope配置：如果是true则只会使用最小数据范围条件放到where后面。如果是false则会在where后面添加所有条件
 
 ## 通用字段填充
 #### 1.概述  
