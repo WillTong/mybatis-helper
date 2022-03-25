@@ -47,6 +47,7 @@ public class PageSqlInterceptor extends SqlInterceptor {
             Long count = null;
             try {
                 PageSettings activeSettings=getSetting(mappedStatement.getId());
+                String countSql=buildCountSql(originalSql,activeSettings);
                 count = executeHelper.exeQuery(new ExecuteHelper.Action() {
                 @Override
                 public Long doAction(ResultSet resultSet) throws SQLException {
@@ -56,7 +57,10 @@ public class PageSqlInterceptor extends SqlInterceptor {
                     }
                     return totalRecord;
                 }
-            },buildCountSql(originalSql,activeSettings),true);
+            },countSql,true);
+            if(count==null){
+                logger.error("查询表数量出错！，sql：{}",buildCountSql(originalSql,activeSettings));
+            }
             PagingBounds pagingBounds=(PagingBounds)rowBounds;
             String sql=dialect.buildPageSql(originalSql, rowBounds);
             pagingBounds.setDefault();
@@ -96,7 +100,7 @@ public class PageSqlInterceptor extends SqlInterceptor {
                 logger.error("无法使用内部sql查询数量，自动转为外部sql！原因：{}",e);
             }
         }
-        StringBuilder sqlBuilder = new StringBuilder("select count(1) from (").append(sql).append(")");
+        StringBuilder sqlBuilder = new StringBuilder("select count(1) from (").append(sql).append(") t");
         return sqlBuilder.toString();
     }
 }
