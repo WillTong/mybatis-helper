@@ -59,7 +59,7 @@ public class PageSqlInterceptor extends SqlInterceptor {
                 }
             },countSql,true);
             if(count==null){
-                logger.error("查询表数量出错！，sql：{}",buildCountSql(originalSql,activeSettings));
+                logger.error("查询表数量出错！，sql：{}",countSql);
             }
             PagingBounds pagingBounds=(PagingBounds)rowBounds;
             String sql=dialect.buildPageSql(originalSql, rowBounds);
